@@ -1,0 +1,15 @@
+# node_modules ফোল্ডার বাদ দিবে
+node_modules/
+
+# environment variables
+.env
+
+# লগ ফাইল
+*.log
+
+# build output
+dist/
+build/
+
+# VSCode settings
+.vscode/
