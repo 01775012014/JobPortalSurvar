@@ -11,7 +11,7 @@ app.use(express.json());
 
 // start mongodb
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = process.env.MONGODB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -60,6 +60,55 @@ app.get('/jobs', async (req, res) => {
   } catch (error) {
     console.error("Error fetching jobs:", error);
     res.status(500).send("Internal server error");
+  }
+});
+
+app.get('/jobs/:id',async (req, res)=>{
+  const id= req.params.id;
+  const query={_id:new ObjectId(id)}
+  const result = await jobsCollection.findOne(query);
+  res.send(result)
+
+
+})
+
+app.post('/jobs', async (req, res) => {
+  try {
+    const job = req.body;
+    const result = await jobsCollection.insertOne(job);
+    res.send(result);
+  } catch (error) {
+    console.error("Error adding job:", error);
+    res.status(500).send("Error adding job");
+  }
+});
+
+app.put('/jobs/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filter = {_id: new ObjectId(id)};
+    const options = { upsert: true };
+    const updatedJob = req.body;
+    const job = {
+      $set: updatedJob
+    };
+    const result = await jobsCollection.updateOne(filter, job, options);
+    res.send(result);
+  } catch (error) {
+    console.error("Error updating job:", error);
+    res.status(500).send("Error updating job");
+  }
+});
+
+app.delete('/jobs/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await jobsCollection.deleteOne(query);
+    res.send(result);
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    res.status(500).send("Error deleting job");
   }
 });
 
